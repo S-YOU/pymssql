@@ -4,11 +4,11 @@ import sys, os
 have_setuptools = 0
 from distutils.core import setup, Extension
 
-try:
-   from setuptools import setup, Extension
-   have_setuptools = 1
-except ImportError:
-   from distutils.core import setup, Extension
+# try:
+#    from setuptools import setup, Extension
+#    have_setuptools = 1
+# except ImportError:
+#    from distutils.core import setup, Extension
 
 # for setup.py register
 classifiers = """\
@@ -25,13 +25,13 @@ Operating System :: POSIX
 Operating System :: Unix
 """
 
-minpyver = (2, 4)
+minpyver = (2, 6)
 
 if sys.version_info < minpyver:
 	print """
 ERROR: You're using Python %d.%d, but pymssql requires at least
 Python %d.%d. Setup cannot continue.
-""" % ( sys.version_info[0], sys.version_info[1], minpyver[0], minpyver[1] )
+""" % (sys.version_info[0], sys.version_info[1], minpyver[0], minpyver[1])
 	sys.exit(1)
 
 if sys.platform == "win32":
@@ -44,7 +44,7 @@ if sys.platform == "win32":
 		# try to determine include and lib path
 		try:
 			h = win32api.RegOpenKey(win32con.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Microsoft SQL Server\80\Tools\ClientSetup')
-			p = win32api.RegQueryValueEx(h,'SQLPath')[0]
+			p = win32api.RegQueryValueEx(h, 'SQLPath')[0]
 		except:
 			e = sys.exc_info()
 			print """
@@ -73,29 +73,29 @@ rights. Setup.py will try some generic paths.
 	include_dirs = [ r'c:\Program Files\Microsoft SQL Server\80\Tools\DevTools\Include', r'c:\mssql7\DevTools\Include', r'd:\DEVEL\pymssql-DEVTOOLS\INCLUDE' ]
 	library_dirs = [ r'c:\Program Files\Microsoft SQL Server\80\Tools\DevTools\Lib', r'\mssql7\DevTools\Lib', r'd:\DEVEL\pymssql-DEVTOOLS\X86LIB' ]
 	libraries = ["ntwdblib", "msvcrt", "kernel32", "user32", "gdi32", "winspool", "comdlg32", "advapi32", "shell32", "ole32", "oleaut32", "uuid", "odbc32", "odbccp32", ]
-	data_files = [("LIB/site-packages",["ntwdblib.dll",]),]
+	data_files = [("LIB/site-packages", ["ntwdblib.dll", ]), ]
 
 	# prepend path from registry, if any
 	if p:
 		include_dirs.insert(0, os.path.join(p, r'DevTools\include'))
 		library_dirs.insert(0, os.path.join(p, r'DevTools\lib'))
 
-else:	# try some generic paths
+else:  # try some generic paths
 	include_dirs = [
 		'/usr/local/include', '/usr/local/include/freetds',  # first local install
-		'/usr/include', '/usr/include/freetds',   # some generic Linux paths
-		'/usr/include/freetds_mssql',             # some versions of Mandriva 
-		'/usr/local/freetds/include',             # FreeBSD
-		'/usr/pkg/freetds/include'	              # NetBSD
+		'/usr/include', '/usr/include/freetds',  # some generic Linux paths
+		'/usr/include/freetds_mssql',  # some versions of Mandriva
+		'/usr/local/freetds/include',  # FreeBSD
+		'/usr/pkg/freetds/include'  # NetBSD
 	]
 	library_dirs = [
 		'/usr/local/lib', '/usr/local/lib/freetds',
 		'/usr/lib', '/usr/lib/freetds',
-		'/usr/lib/freetds_mssql', 
+		'/usr/lib/freetds_mssql',
 		'/usr/local/freetds/lib',
 		'/usr/pkg/freetds/lib'
 	]
-	libraries = [ "sybdb" ]   # on Mandriva you may have to change it to sybdb_mssql
+	libraries = [ "sybdb" ]  # on Mandriva you may have to change it to sybdb_mssql
 	data_files = []
 
 if sys.platform == "cygwin":
@@ -108,22 +108,22 @@ if sys.platform == "darwin":
 	include_dirs.insert(0, fink + 'include')
 	library_dirs.insert(0, fink + 'lib')
 
-setup(name = 'pymssql',
-	version = '1.0.3',
-	description = 'A simple database interface to MS-SQL for Python.',
-	long_description = open('README').read() +"\n\n" + open('ChangeLog').read(),
-	author = 'Joon-cheol Park',
-	author_email = 'jooncheol@gmail.com',
-	maintainer = 'pymssql Google Group',
-	maintainer_email = 'pymssql@googlegroups.com',
-	license = 'LGPL',
-	url = 'https://code.google.com/p/pymssql/',
-	py_modules = [ 'pymssql' ],
-	ext_modules = [ Extension('_mssql', ['mssqldbmodule.c'],
-			include_dirs = include_dirs,
-			library_dirs = library_dirs,
-			libraries = libraries) ],
-	classifiers = filter(None, classifiers.split('\n')),
-	data_files = data_files,
-	#zip_safe = False  # we accept the warning if there's no setuptools and in case of Python 2.4 and 2.5
+setup(name='pymssql',
+	version='1.0.3',
+	description='A simple database interface to MS-SQL for Python.',
+	long_description=open('README').read() + "\n\n" + open('ChangeLog').read(),
+	author='Joon-cheol Park',
+	author_email='jooncheol@gmail.com',
+	maintainer='pymssql Google Group',
+	maintainer_email='pymssql@googlegroups.com',
+	license='LGPL',
+	url='https://code.google.com/p/pymssql/',
+	py_modules=[ 'pymssql' ],
+	ext_modules=[ Extension('_mssql', ['mssqldbmodule.c'],
+			include_dirs=include_dirs,
+			library_dirs=library_dirs,
+			libraries=libraries) ],
+	classifiers=filter(None, classifiers.split('\n')),
+	data_files=data_files,
+	# zip_safe = False  # we accept the warning if there's no setuptools and in case of Python 2.4 and 2.5
 )

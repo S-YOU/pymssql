@@ -3,7 +3,7 @@ VERSION=1.0.3
 
 KIND=static
 KIND=shared
-PYVER=2.4
+PYVER=2.7
 rm -rf build
 rm dist/pymssql-$VERSION*
 python$PYVER setup.py bdist

@@ -1606,7 +1606,7 @@ init_mssql(void) {
 	_mssql_connection_type.tp_getattro = PyObject_GenericGetAttr;
 	_mssql_row_iterator_type.tp_getattro = PyObject_GenericGetAttr;
 
-	PyDateTime_IMPORT;  // import datetime
+	PyDateTime_IMPORT; //import datetime
 
 	_decimal_module = PyImport_ImportModule("decimal");
 	if (_decimal_module == NULL)  return;
@@ -2245,12 +2245,20 @@ PyObject *fetch_next_row_dict(_mssql_connection *conn, int raise) {
 		val = PyTuple_GetItem(row, col-1);
 		if (val == NULL)  return NULL;
 
+//		printf("name: %s", PyString_AS_STRING(name), val);
+//		if (PyString_CheckExact(val)) {
+//			printf(", val: [%s]", PyString_AS_STRING(val));
+//		}
+//		printf("\n");
+
 		// add key by column name, do not add if name == ''
-		if (strlen(PyString_AS_STRING(name)) != 0)
+		if (PyString_CheckExact(name) && PyString_GET_SIZE(name) > 0) {
 			if ((PyDict_SetItem(dict, name, val)) == -1)
 				return NULL;
+			continue;
+		}
 
-		// add key by column number
+//		 add key by column number
 		if ((PyDict_SetItem(dict, PyInt_FromLong(col-1), val)) == -1)
 			return NULL;
 	}
